@@ -33,9 +33,9 @@ object Solution {
 
     stringBuilder.append(s"\n Map: \n")
     (0 to solution.mapSize)
-      .flatMap(row => {
+      .flatMap(column => {
         (0 to solution.mapSize)
-          .map(column => {
+          .map(row => {
             val position = (row, column)
             if (position == solution.startState.position){
               stringBuilder.append("| S ")

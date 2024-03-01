@@ -43,11 +43,31 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
         makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths)
       }
       else if (nextStates.size > 1) {
-        log.warn(s"Ball Stopped with Multiple possible, untried directions. $currentState.")
-        val unprocessedBallStates: Seq[Seq[BallState]] = nextStates.tail
+        log.warn(s"Ball Stopped with ${nextStates.size} possible, untried directions. $currentState.")
+        // chose a next direction that is towards the destination, if possible
+        val sortedNextStates = nextStates.sortWith((state1, _) => {
+          val distanceToX = Math.abs(destination._1 - currentState.position._1)
+          val distanceToY = Math.abs(destination._2 - currentState.position._2)
+
+          val nextStateDistanceToX = Math.abs(destination._1 - state1.position._1)
+          val nextStateDistanceToY = Math.abs(destination._2 - state1.position._2)
+
+          log.warn(s"destinationPosition: $destination, currentPosition: ${currentState.position}, checkingPosition: ${state1.position}, direction: ${state1.direction}")
+
+          if ((distanceToY - nextStateDistanceToY > 0) ||
+            (distanceToX - nextStateDistanceToX > 0)) {
+            log.warn(s"${state1.direction} is towards")
+            true
+          }
+          else {
+            log.warn(s"${state1.direction} is away")
+            false
+          }
+        })
+        val unprocessedBallStates: Seq[Seq[BallState]] = sortedNextStates.tail
           .filterNot(state => unprocessedPaths.exists(path => path.last == state))
           .map(tail => previousBallStates :+ tail )
-        makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
+        makeMove(sortedNextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
       }
       else if (nextStates.size == 0 && unprocessedPaths.size > 0) {
         log.warn(s"Path failed, but we have previous untried paths. Switching to other path. $currentState.")
@@ -87,23 +107,24 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
   // generate a Seq of Spots that represent a random board with a start, destination, and walls.
   private def generateBoard(size: Int, wallPercent: Int, startPosition: BallState, destinationPosition: (Int, Int)): Seq[Spot] =
     (0 to size)
-      .flatMap(row => (0 to size)
-        .map(column => {
+      .flatMap(column => (0 to size)
+        .map(row => {
           val isWall = if (startPosition.position == (row, column) || destinationPosition == (row, column) || Random.nextInt(100) > wallPercent) {
             false
           } else {
             true
           }
+          log.warn(s"making spot: X=$row, Y=$column, isWall=$isWall")
           Spot(isWall, (row, column))
         }))
 
   // this returns the next ball state if it can keep moving or None if the next spot is a wall
   private def getNextState(ballState: BallState, board: Seq[Spot]): Option[BallState] = {
     val nextPositionInDirection = ballState match {
-      case BallState(position, Directions.Up) => (position._1 - 1, position._2)
-      case BallState(position, Directions.Down) => (position._1 + 1, position._2)
-      case BallState(position, Directions.Right) => (position._1, position._2 + 1)
-      case BallState(position, Directions.Left) => (position._1, position._2 - 1)
+      case BallState(position, Directions.Up) => (position._1, position._2 - 1)
+      case BallState(position, Directions.Down) => (position._1, position._2 + 1)
+      case BallState(position, Directions.Right) => (position._1 + 1, position._2)
+      case BallState(position, Directions.Left) => (position._1 - 1, position._2)
       case BallState(position, Directions.Stopped) => (position._1, position._2)
     }
     board
