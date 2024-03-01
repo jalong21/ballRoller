@@ -16,7 +16,7 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
 
     // generate random start and stop positions and create a random board
     val startPosition = BallState((Random.nextInt(size), Random.nextInt(size)), Directions.Stopped)
-    val destinationPosition = (Random.nextInt(size), Random.nextInt(size))
+    val destinationPosition = getDestinationPosition(startPosition.position, size)
     val board: Seq[Spot] = generateBoard(size, 20, startPosition, destinationPosition)
 
     // call recursive makeMove function that returns a list of moves with a solution, if there is one.
@@ -73,6 +73,15 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
       getNextState(BallState(state.position, Directions.Up), board),
       getNextState(BallState(state.position, Directions.Down), board))
       .flatten
+
+  // ensure that the destination position is not the starting position
+  private def getDestinationPosition(startingPosition: (Int, Int), size: Int) = {
+    var destination = (Random.nextInt(size), Random.nextInt(size))
+    while(destination == startingPosition) {
+      destination = (Random.nextInt(size), Random.nextInt(size))
+    }
+    destination
+  }
 
   // generate a Seq of Spots that represent a random board with a start, destination, and walls.
   private def generateBoard(size: Int, wallPercent: Int, startPosition: BallState, destinationPosition: (Int, Int)): Seq[Spot] =
