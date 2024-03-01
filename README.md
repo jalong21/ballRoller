@@ -1,16 +1,18 @@
 # Get Started With Docker
 
-- install and run Docker Desktop
-- build and run this project using the following docker commands in the terminal at the project's root folder.
+- Install and run Docker Desktop
+- Build and run this project using the following docker commands in the terminal at the project's root folder.
     - ```docker build -t ballrunner .```
     - ```docker run --rm -p 8080:9000 --name ballrunner ballrunner```
 
 You should now be able to hit this service's endpoints at localhost:8080
 
-hitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the height/width of the board you want it to generate will return a text print-out with a randomly generated board and a solution, if there is one, that looks like: 
+hHitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the height/width of the board you want it to generate will return a text print-out with a randomly generated board and a solution, if there is one. 
 
 I have found that most random boards do not have a solution, so you might have to hit the endpoint a few times to find a good one. 
 Solutions are more common with smaller boards.
+
+Sample Response:
 
 ```Ball Rolling Game
 starting position: (0,5)
