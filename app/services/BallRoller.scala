@@ -8,8 +8,7 @@ import javax.inject.Inject
 import scala.annotation.tailrec
 import scala.util.Random
 
-class BallRoller @Inject()(implicit val materializer: Materializer,
-                           dictionary: DictionarySearcher) {
+class BallRoller @Inject()(implicit val materializer: Materializer) {
 
   val log = Logger(this.getClass.getName)
 
