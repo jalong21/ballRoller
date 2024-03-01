@@ -29,7 +29,7 @@ object Solution {
   def drawBoard(solution: Solution): String = {
     val stringBuilder = new StringBuilder("\n\n Ball Rolling Game")
     stringBuilder.append(s"\n Starting position: ${solution.startState.position}")
-    stringBuilder.append(s"\n Destination: ${solution.destination}}")
+    stringBuilder.append(s"\n Destination: ${solution.destination}")
 
     stringBuilder.append(s"\n Map: \n")
     (0 to solution.mapSize)

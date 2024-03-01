@@ -26,7 +26,7 @@ Sample Response:
 
 ```Ball Rolling Game
 Starting position: (0,5)
-Destination: (5,0)}
+Destination: (5,0)
 Map:
 |   |   |||||   |   | S |   |
 |   |   |   |   ||||| * |   |
