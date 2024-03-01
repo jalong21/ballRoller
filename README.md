@@ -1,7 +1,7 @@
 # Get Started With Docker
 
 - install and run Docker Desktop
-- run this SBT project in docker (sbt has built in docker plugin)
+- build and run this project using the following docker commands in the terminal at the project's root folder.
     - ```docker build -t ballrunner .```
     - ```docker run --rm -p 8080:9000 --name ballrunner ballrunner```
 
