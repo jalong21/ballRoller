@@ -15,7 +15,7 @@ Solutions are more common with smaller boards.
 Sample Response:
 
 ```Ball Rolling Game
-starting position: (0,5)
+Starting position: (0,5)
 Destination: (5,0)}
 Map:
 |   |   |||||   |   | S |   |
@@ -26,29 +26,16 @@ Map:
 | D | * | * | * | * | * |||||
 |   |   |   |   |   |||||   |
 
-
 BallState((1,5),Down)
-
 BallState((1,5),Down)
-
 BallState((2,5),Down)
-
 BallState((3,5),Down)
-
 BallState((4,5),Down)
-
 BallState((5,5),Down)
-
 BallState((5,5),Stopped)
-
 BallState((5,4),Left)
-
 BallState((5,3),Left)
-
 BallState((5,2),Left)
-
 BallState((5,1),Left)
-
 BallState((5,0),Left)
-
 BallState((5,0),Stopped)
