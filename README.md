@@ -1,4 +1,14 @@
-# Get Started With Docker
+# Rolling Ball Problem
+
+Many interview coding problems involve navigating a grid in some way.
+This one involves a board with walls and a ball.
+The ball has a starting position and a destination. 
+It can start rolling in any direction as long as there is not a wall in its way.
+Once it starts moving, it must keep moving until it hits a wall, at which point it can start moving again in any new position.
+If it stops at a destination point, a solution is found.
+Some boards might not have a solution, because it is impossible for the ball to stop at that position.
+
+## Build with Docker
 
 - Install and run Docker Desktop
 - Build and run this project using the following docker commands in the terminal at the project's root folder.
