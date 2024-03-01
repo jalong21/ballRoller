@@ -1,0 +1,10 @@
+/target/global-logging/
+/target/scala-2.13/
+/target/streams/
+/target/task-temp-directory/
+/target/test-reports/
+/target/.history3
+/target/target.iml
+/project/target/
+/project/project/target/
+/.idea/
