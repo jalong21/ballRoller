@@ -12,19 +12,22 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
 
   val log = Logger(this.getClass.getName)
 
-  def rollBall(size: Int): Solution = {
+  def rollBall(size: Int, continueTillSolution: Boolean, percentWalls: Int): Solution = {
+    var solution: Solution = null
+    do {
+      // generate random start and stop positions and create a random board
+      val startPosition = BallState((Random.nextInt(size), Random.nextInt(size)), Directions.Stopped)
+      val destinationPosition = getDestinationPosition(startPosition.position, size)
+      val board: Seq[Spot] = generateBoard(size, percentWalls, startPosition, destinationPosition)
 
-    // generate random start and stop positions and create a random board
-    val startPosition = BallState((Random.nextInt(size), Random.nextInt(size)), Directions.Stopped)
-    val destinationPosition = getDestinationPosition(startPosition.position, size)
-    val board: Seq[Spot] = generateBoard(size, 20, startPosition, destinationPosition)
+      log.warn(s"Board generated. Starting to find solution!")
+      // call recursive makeMove function that returns a list of moves with a solution, if there is one.
+      val solutionMoves = makeMove(startPosition, destinationPosition, board)
+      // create Solution object for printing text response
+      solution = Solution(board, solutionMoves, startPosition, destinationPosition, size)
+    } while (continueTillSolution && solution.travelPath.size <= 0)
 
-    log.warn(s"Board generated. Starting to find solution!")
-    // call recursive makeMove function that returns a list of moves with a solution, if there is one.
-    val solutionMoves = makeMove(startPosition, destinationPosition, board)
-
-    // create Solution object for printing text response
-    Solution(board, solutionMoves, startPosition, destinationPosition, size)
+    solution
   }
 
   // this is using tail recursion to avoid stack overflow errors
