@@ -12,7 +12,7 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
 
   val log = Logger(this.getClass.getName)
 
-  def RollBall(size: Int): Solution = {
+  def rollBall(size: Int): Solution = {
 
     // generate random start and stop positions and create a random board
     val startPosition = BallState((Random.nextInt(size), Random.nextInt(size)), Directions.Stopped)

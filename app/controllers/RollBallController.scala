@@ -13,7 +13,7 @@ class RollBallController @Inject()(cc: ControllerComponents,
                                    player: BallRoller) extends AbstractController(cc) {
 
   def rollBall(boardSize: Int) = Action {
-    request => Try(player.RollBall(boardSize)) match {
+    _ => Try(player.rollBall(boardSize)) match {
           case Success(solution) => Ok(Solution.drawBoard(solution))
           case Failure(exception) => InternalServerError(exception.getMessage)
         }
