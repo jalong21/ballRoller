@@ -23,6 +23,7 @@ I have found that most random boards do not have a solution, so you might have t
 Solutions are more common with smaller boards.
 
 Sample Request:
+
 ```localhost:8080/v1/rollBall?boardSize=5```
 
 Sample Response:

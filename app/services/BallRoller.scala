@@ -27,45 +27,48 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
     Solution(board, solutionMoves, startPosition, destinationPosition, size)
   }
 
+  // this is using tail recursion to avoid stack overflow errors
+  // every path must return either a call to itself or the return value in the signature.
+  // every new call should be after a change in the currentState: BallState
   @tailrec
   private def makeMove(currentState: BallState, destination: (Int, Int), board: Seq[Spot], previousBallStates: Seq[BallState] = Seq.empty[BallState], unprocessedPaths: Seq[Seq[BallState]] = Seq.empty[Seq[BallState]]): Seq[BallState] = {
 
-    if (currentState.direction == Directions.Stopped && currentState.position == destination) {
-      log.warn(s"Destination found! previous ball states: ${previousBallStates.size}")
-      previousBallStates :+ currentState
-    } else if( currentState.direction == Directions.Stopped) {
+    // we will do different things based on our current direction and position
+    (currentState.direction, currentState.position) match {
+      case (Directions.Stopped, position) if position == destination =>
+        log.warn(s"Destination found! previous ball states: ${previousBallStates.size}")
+        previousBallStates :+ currentState
+      case (direction, _) if direction != Directions.Stopped =>
+        log.warn(s"Continuing in current direction. $currentState.")
+        val nextState = getNextState(currentState, board)
+          .getOrElse(BallState(currentState.position, Directions.Stopped))
+        makeMove(nextState, destination, board, previousBallStates :+ currentState, unprocessedPaths)
+      case (Directions.Stopped, _) => {
+        log.warn(s"Ball is stopped, deciding where to go next")
+        val nextStates: Seq[BallState] = getNextPossibleStates(currentState, board)
+          .filterNot(possibleState => previousBallStates.contains(possibleState))
 
-      val nextStates: Seq[BallState] = getNextPossibleStates(currentState, board)
-        .filterNot(possibleState => previousBallStates.contains(possibleState))
-
-      if (nextStates.size == 1) {
-        log.warn(s"Ball stopped with only one possible, untried direction. $currentState.")
-        makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths)
+        (nextStates.size, unprocessedPaths.size) match {
+          case (1, _) =>
+            log.warn(s"Ball stopped with only one possible, untried direction. $currentState.")
+            makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths)
+          case (nextStatesCount, _) if nextStatesCount > 1 =>
+            log.warn(s"Ball Stopped with ${nextStates.size} possible, untried directions. $currentState.")
+            val sortedNextStates = sortNextStatesByDirection(destination, nextStates, currentState)
+            val unprocessedBallStates: Seq[Seq[BallState]] = sortedNextStates.tail
+              .filterNot(state => unprocessedPaths.exists(path => path.last == state))
+              .map(tail => previousBallStates :+ tail)
+            makeMove(sortedNextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
+          case (0, unprocessedPathsCount) if unprocessedPathsCount > 0 =>
+            log.warn(s"Path failed, but we have previous untried paths. Switching to other path. $currentState.")
+            val pastPreviousPath = unprocessedPaths.head
+            val postPreviousState = pastPreviousPath.head
+            makeMove(postPreviousState, destination, board, pastPreviousPath, unprocessedPaths.tail)
+          case _ =>
+            log.warn(s"Path failed with no untried paths left, returning empty. $currentState.")
+            Seq.empty[BallState]
+        }
       }
-      else if (nextStates.size > 1) {
-        log.warn(s"Ball Stopped with ${nextStates.size} possible, untried directions. $currentState.")
-        // chose a next direction that is towards the destination, if possible
-        val sortedNextStates = sortNextStatesByDirection(destination, nextStates, currentState)
-        val unprocessedBallStates: Seq[Seq[BallState]] = sortedNextStates.tail
-          .filterNot(state => unprocessedPaths.exists(path => path.last == state))
-          .map(tail => previousBallStates :+ tail )
-        makeMove(sortedNextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
-      }
-      else if (nextStates.size == 0 && unprocessedPaths.size > 0) {
-        log.warn(s"Path failed, but we have previous untried paths. Switching to other path. $currentState.")
-        val pastPreviousPath = unprocessedPaths.head
-        val postPreviousState = pastPreviousPath.head
-        makeMove(postPreviousState, destination, board, pastPreviousPath, unprocessedPaths.tail)
-      }
-      else {
-        log.warn(s"Path failed with no untried paths left, returning empty. $currentState.")
-        Seq.empty[BallState]
-      }
-    } else {
-      log.warn(s"Continuing in current direction. $currentState.")
-      val nextState = getNextState(currentState, board)
-        .getOrElse(BallState(currentState.position, Directions.Stopped))
-      makeMove(nextState, destination, board, previousBallStates :+ currentState, unprocessedPaths)
     }
   }
 
