@@ -39,7 +39,7 @@ class BallRoller @Inject()(implicit val materializer: Materializer,
       else if (nextStates.size > 1) {
         log.warn(s"Multiple Next states. $currentState. previous ball states: ${previousBallStates.size}")
         val unprocessedBallStates: Seq[Seq[BallState]] = nextStates.tail
-          .filterNot(state => unprocessedPaths.exists(path => path.head == state))
+          .filterNot(state => unprocessedPaths.exists(path => path.last == state))
           .map(tail => previousBallStates :+ tail )
         makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
       }
