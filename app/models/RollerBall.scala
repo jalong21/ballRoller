@@ -31,10 +31,6 @@ object Solution {
     stringBuilder.append(s"\n starting position: ${solution.startState.position}")
     stringBuilder.append(s"\n Destination: ${solution.destination}}")
 
-    if (solution.travelPath.isEmpty) {
-      stringBuilder.append(s"\n Solution Impossible :(")
-    }
-
     stringBuilder.append(s"\n Map: \n")
     (0 to solution.mapSize)
       .flatMap(row => {
@@ -62,7 +58,11 @@ object Solution {
         stringBuilder.append("|\n")
       })
 
-    solution.travelPath.foreach( ballState => stringBuilder.append(s"\n \n $ballState"))
+    if (solution.travelPath.isEmpty) {
+      stringBuilder.append(s"\n Solution Impossible :(")
+    }
+
+    solution.travelPath.foreach( ballState => stringBuilder.append(s"\n $ballState"))
     stringBuilder.toString()
   }
 }
