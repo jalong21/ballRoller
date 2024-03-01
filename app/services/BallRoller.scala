@@ -42,11 +42,32 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
         makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths)
       }
       else if (nextStates.size > 1) {
+
         log.warn(s"Ball Stopped with Multiple possible, untried directions. $currentState.")
-        val unprocessedBallStates: Seq[Seq[BallState]] = nextStates.tail
+        // chose a next direction that is towards the destination, if possible
+        val sortedNextStates = nextStates.sortWith((state1, _) => {
+          val destinationXDirection = destination._1 - currentState.position._1
+          val destinationYDirection = destination._2 - currentState.position._2
+
+          val nextStateXDirection = destination._1 - state1.position._1
+          val nextStateYDirection = destination._2 - state1.position._2
+
+          log.warn(s"choosing next direction. destinationXDirection= $destinationXDirection, destinationYDirection=$destinationYDirection, nextStateXDirection=$nextStateXDirection, nextStateYDirection=$nextStateYDirection")
+
+          if ((destinationYDirection - nextStateYDirection < 0) ||
+            (destinationXDirection - nextStateXDirection > 0)) {
+            log.warn(s"${state1.direction} is towards")
+            true
+          } else {
+            log.warn(s"${state1.direction} is away")
+            false
+          }
+        })
+
+        val unprocessedBallStates: Seq[Seq[BallState]] = sortedNextStates.tail
           .filterNot(state => unprocessedPaths.exists(path => path.last == state))
           .map(tail => previousBallStates :+ tail )
-        makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
+        makeMove(sortedNextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
       }
       else if (nextStates.size == 0 && unprocessedPaths.size > 0) {
         log.warn(s"Path failed, but we have previous untried paths. Switching to other path. $currentState.")
