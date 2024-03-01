@@ -7,7 +7,7 @@
 
 You should now be able to hit this service's endpoints at localhost:8080
 
-hitting: ```localhost:8080/v1/rollBall?boardSize=6```
+hitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the height/width of the board you want it to generate.
 
 should return a text print-out with a randomly generated board and a solution, if there is one, that looks like: 
 
