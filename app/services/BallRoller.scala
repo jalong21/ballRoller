@@ -15,46 +15,52 @@ class BallRoller @Inject()(implicit val materializer: Materializer,
 
   def RollBall(size: Int): Solution = {
 
+    // generate random start and stop positions and create a random board
     val startPosition = BallState((Random.nextInt(size), Random.nextInt(size)), Directions.Stopped)
     val destinationPosition = (Random.nextInt(size), Random.nextInt(size))
     val board: Seq[Spot] = generateBoard(size, 20, startPosition, destinationPosition)
 
-    Solution(board, makeMove(startPosition, destinationPosition, board), startPosition, destinationPosition, size)
+    // call recursive makeMove function that returns a list of moves with a solution, if there is one.
+    val solutionMoves = makeMove(startPosition, destinationPosition, board)
+
+    // create Solution object for printing text response
+    Solution(board, solutionMoves, startPosition, destinationPosition, size)
   }
 
   @tailrec
   private def makeMove(currentState: BallState, destination: (Int, Int), board: Seq[Spot], previousBallStates: Seq[BallState] = Seq.empty[BallState], unprocessedPaths: Seq[Seq[BallState]] = Seq.empty[Seq[BallState]]): Seq[BallState] = {
 
     if (currentState.direction == Directions.Stopped && currentState.position == destination) {
-      log.warn("found. previous ball states: ${previousBallStates.size}")
+      log.warn(s"Destination found! previous ball states: ${previousBallStates.size}")
       previousBallStates :+ currentState
     } else if( currentState.direction == Directions.Stopped) {
 
       val nextStates: Seq[BallState] = getNextPossibleStates(currentState, board)
         .filterNot(possibleState => previousBallStates.contains(possibleState))
+
       if (nextStates.size == 1) {
-        log.warn(s"one Next state. $currentState. previous ball states: ${previousBallStates.size}")
+        log.warn(s"Ball stopped with only one possible, untried direction. $currentState.")
         makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths)
       }
       else if (nextStates.size > 1) {
-        log.warn(s"Multiple Next states. $currentState. previous ball states: ${previousBallStates.size}")
+        log.warn(s"Ball Stopped with Multiple possible, untried directions. $currentState.")
         val unprocessedBallStates: Seq[Seq[BallState]] = nextStates.tail
           .filterNot(state => unprocessedPaths.exists(path => path.last == state))
           .map(tail => previousBallStates :+ tail )
         makeMove(nextStates.head, destination, board, previousBallStates :+ currentState, unprocessedPaths ++ unprocessedBallStates)
       }
       else if (nextStates.size == 0 && unprocessedPaths.size > 0) {
-        log.warn(s"switching to other path. $currentState. previous ball states: ${previousBallStates.size}")
+        log.warn(s"Path failed, but we have previous untried paths. Switching to other path. $currentState.")
         val pastPreviousPath = unprocessedPaths.head
         val postPreviousState = pastPreviousPath.head
         makeMove(postPreviousState, destination, board, pastPreviousPath, unprocessedPaths.tail)
       }
       else {
-        log.warn(s"Path failed, returning empty. $currentState. previous ball states: ${previousBallStates.size}")
+        log.warn(s"Path failed with no untried paths left, returning empty. $currentState.")
         Seq.empty[BallState]
       }
     } else {
-      log.warn(s"continuing in direction. $currentState. previous ball states: ${previousBallStates.size}")
+      log.warn(s"Continuing in current direction. $currentState.")
       val nextState = getNextState(currentState, board)
         .getOrElse(BallState(currentState.position, Directions.Stopped))
       makeMove(nextState, destination, board, previousBallStates :+ currentState, unprocessedPaths)
@@ -69,6 +75,7 @@ class BallRoller @Inject()(implicit val materializer: Materializer,
       getNextState(BallState(state.position, Directions.Down), board))
       .flatten
 
+  // generate a Seq of Spots that represent a random board with a start, destination, and walls.
   private def generateBoard(size: Int, wallPercent: Int, startPosition: BallState, destinationPosition: (Int, Int)): Seq[Spot] =
     (0 to size)
       .flatMap(row => (0 to size)
