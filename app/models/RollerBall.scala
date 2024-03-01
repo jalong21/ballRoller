@@ -32,9 +32,9 @@ object Solution {
     stringBuilder.append(s"\n Destination: ${solution.destination}")
 
     stringBuilder.append(s"\n Map: \n")
-    (0 to solution.mapSize)
+    (0 to solution.mapSize - 1)
       .flatMap(column => {
-        (0 to solution.mapSize)
+        (0 to solution.mapSize - 1)
           .map(row => {
             val position = (row, column)
             if (position == solution.startState.position){

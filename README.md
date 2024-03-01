@@ -22,30 +22,27 @@ Hitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the heig
 I have found that most random boards do not have a solution, so you might have to hit the endpoint a few times to find a good one. 
 Solutions are more common with smaller boards.
 
+Sample Request:
+```localhost:8080/v1/rollBall?boardSize=5```
+
 Sample Response:
 
-```Ball Rolling Game
-Starting position: (0,5)
-Destination: (5,0)
-Map:
-|   |   |||||   |   | S |   |
-|   |   |   |   ||||| * |   |
-|   |   |||||   |   | * |||||
-|   |   |   |   |   | * |   |
-|   |   |||||   |   | * |   |
-| D | * | * | * | * | * |||||
-|   |   |   |   |   |||||   |
+```
+ Ball Rolling Game
+ Starting position: (0,3)
+ Destination: (4,4)
+ Map: 
+|||||   |   |   |   |
+|||||   |   |   |   |
+|   |   |   |   |   |
+| S |   |||||   |   |
+| * | * | * | * | D |
 
-BallState((1,5),Down)
-BallState((1,5),Down)
-BallState((2,5),Down)
-BallState((3,5),Down)
-BallState((4,5),Down)
-BallState((5,5),Down)
-BallState((5,5),Stopped)
-BallState((5,4),Left)
-BallState((5,3),Left)
-BallState((5,2),Left)
-BallState((5,1),Left)
-BallState((5,0),Left)
-BallState((5,0),Stopped)
+ BallState((0,3),Stopped)
+ BallState((0,4),Down)
+ BallState((0,4),Stopped)
+ BallState((1,4),Right)
+ BallState((2,4),Right)
+ BallState((3,4),Right)
+ BallState((4,4),Right)
+ BallState((4,4),Stopped)
