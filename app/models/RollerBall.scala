@@ -2,8 +2,6 @@ package models
 
 import play.api.libs.json.{Json, Writes}
 
-import scala.collection.mutable
-
 object Directions extends Enumeration {
   type Direction = Value
 

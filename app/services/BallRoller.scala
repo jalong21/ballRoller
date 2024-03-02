@@ -12,7 +12,10 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
 
   val log = Logger(this.getClass.getName)
 
-  def rollBall(size: Int, continueTillSolution: Boolean, percentWalls: Int): Solution = {
+  def rollBall(size: Int,
+               continueTillSolution: Boolean,
+               percentWalls: Int
+              ): Solution = {
     var solution: Solution = null
     do {
       // generate random start and stop positions and create a random board
@@ -34,7 +37,12 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
   // every path must return either a call to itself or the return value in the signature.
   // every new call should be after a change in the currentState: BallState
   @tailrec
-  private def makeMove(currentState: BallState, destination: (Int, Int), board: Seq[Spot], previousBallStates: Seq[BallState] = Seq.empty[BallState], unprocessedPaths: Seq[Seq[BallState]] = Seq.empty[Seq[BallState]]): Seq[BallState] = {
+  private def makeMove(currentState: BallState,
+                       destination: (Int, Int),
+                       board: Seq[Spot],
+                       previousBallStates: Seq[BallState] = Seq.empty[BallState],
+                       unprocessedPaths: Seq[Seq[BallState]] = Seq.empty[Seq[BallState]]
+                      ): Seq[BallState] = {
 
     // we will do different things based on our current direction and position
     (currentState.direction, currentState.position) match {
@@ -75,26 +83,21 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
     }
   }
 
-  private def sortNextStatesByDirection(destination: (Int, Int), nextStates: Seq[BallState], currentState: BallState) = {
+  private def sortNextStatesByDirection(destination: (Int, Int), nextStates: Seq[BallState], currentState: BallState) =
     nextStates.sortWith((state1, _) => {
       val distanceToX = Math.abs(destination._1 - currentState.position._1)
       val distanceToY = Math.abs(destination._2 - currentState.position._2)
       val nextStateDistanceToX = Math.abs(destination._1 - state1.position._1)
       val nextStateDistanceToY = Math.abs(destination._2 - state1.position._2)
 
-      log.warn(s"destinationPosition: $destination, currentPosition: ${currentState.position}, checkingPosition: ${state1.position}, direction: ${state1.direction}")
-
-      if ((distanceToY - nextStateDistanceToY > 0) ||
-        (distanceToX - nextStateDistanceToX > 0)) {
+      if ((distanceToY - nextStateDistanceToY > 0) || (distanceToX - nextStateDistanceToX > 0)) {
         log.warn(s"${state1.direction} is towards")
         true
-      }
-      else {
+      } else {
         log.warn(s"${state1.direction} is away")
         false
       }
     })
-  }
 
   // this uses getNextState to create a list of possible next states if it starts moving
   private def getNextPossibleStates(state: BallState, board: Seq[Spot]): Seq[BallState] =
@@ -114,7 +117,11 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
   }
 
   // generate a Seq of Spots that represent a random board with a start, destination, and walls.
-  private def generateBoard(size: Int, wallPercent: Int, startPosition: BallState, destinationPosition: (Int, Int)): Seq[Spot] =
+  private def generateBoard(size: Int,
+                            wallPercent: Int,
+                            startPosition: BallState,
+                            destinationPosition: (Int, Int)
+                           ): Seq[Spot] =
     (0 to size - 1)
       .flatMap(column => (0 to size -1)
         .map(row => {
