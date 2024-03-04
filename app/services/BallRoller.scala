@@ -23,7 +23,7 @@ class BallRoller @Inject()(implicit val materializer: Materializer) {
       val destinationPosition = getDestinationPosition(startPosition.position, size)
       val board: Seq[Spot] = generateBoard(size, percentWalls, startPosition, destinationPosition)
 
-      log.warn(s"Board generated. Starting to find solution!")
+      log.warn(s"Board generated. Finding solution!")
       // call recursive makeMove function that returns a list of moves with a solution, if there is one.
       val solutionMoves = makeMove(startPosition, destinationPosition, board)
       // create Solution object for printing text response

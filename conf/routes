@@ -3,4 +3,4 @@
 # First created this health endpoint to be used to test that app is, in fact, running
 GET     /v1/health                  controllers.Health.index
 
-GET    /v1/rollBall                 controllers.RollBallController.rollBall(boardSize: Int, continueToSolution: Option[Boolean], percentWalls: Option[Int])
+GET    /v1/rollBall                 controllers.RollBallController.rollBall(boardSize: Option[Int], continueToSolution: Option[Boolean], percentWalls: Option[Int])

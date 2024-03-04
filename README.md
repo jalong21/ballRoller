@@ -22,11 +22,21 @@ Hitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the heig
 I have found that most random boards do not have a solution, so you might have to hit the endpoint a few times to find a good one. 
 Solutions are more common with smaller boards.
 
-Sample Request:
+### Sample Request:
 
-```localhost:8080/v1/rollBall?boardSize=5```
+```localhost:8080/v1/rollBall```
 
-Sample Response:
+or
+
+```localhost:8080/v1/rollBall?boardSize=5&continueToSolution=true&percentWalls=20```
+
+boardSize: the height and width of the board. default = 5
+
+continueToSolution: If 'true' will continue retrying to make boards until one with a solution is created. If false, will return the first board generated. default = true
+
+percentWalls: the percentage chance that any one spot on the board is a wall. default = 20
+
+### Sample Response:
 
 ```
  Ball Rolling Game
