@@ -17,11 +17,6 @@ Some boards might not have a solution, because it is impossible for the ball to 
 
 You should now be able to hit this service's endpoints at localhost:8080
 
-Hitting: ```localhost:8080/v1/rollBall?boardSize=6``` with boardSize as the height/width of the board you want it to generate will return a text print-out with a randomly generated board and a solution, if there is one. 
-
-I have found that most random boards do not have a solution, so you might have to hit the endpoint a few times to find a good one. 
-Solutions are more common with smaller boards.
-
 ### Sample Request:
 
 ```localhost:8080/v1/rollBall```
